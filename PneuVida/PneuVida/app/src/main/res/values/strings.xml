@@ -1,0 +1,142 @@
+<resources>
+    <!-- app wide strings -->
+    <string name="pneuvida_logo">pneuvida logo</string>
+    <string name="app_name">PneuVida</string>
+
+    <!-- home strings -->
+    <string name="vitals_display_button">Vitals Display</string>
+    <string name="help_info_button">Help/Info</string>
+    <string name="patient_profiles_button">Patient Profiles</string>
+    <string name="settings_button">Settings</string>
+
+    <!-- patient profile strings -->
+    <string name="height_text">Height</string>
+    <string name="name">Last Name, First Name</string>
+    <string name="dob_text">D.O.B.</string>
+    <string name="notes_text">Notes</string>
+    <string name="sex_text">Sex</string>
+    <string name="weight_text">Weight</string>
+    <string name="notes_hint">Any other notes about patients go here</string>
+    <string name="meds_hint">patient\'s medications</string>
+    <string name="allergies_text">Allergies</string>
+    <string name="allergies_hint">patient\'s allergies</string>
+    <string name="medications_text">Medications</string>
+
+    <!-- patient profile menu strings -->
+    <string name="add_profile_button">Add Profile</string>
+    <string name="delete_profile_button">Delete Profile</string>
+    <string name="profile1">Profile 1</string>
+    <string name="profile2">Profile 2</string>
+    <string name="profile3">Profile 3</string>
+    <string name="profile4">Profile 4</string>
+    <string name="profile5">Profile 5</string>
+    <string name="profile6">Profile 6</string>
+
+    <!-- edit profile strings -->
+    <string name="cancel_button">Cancel</string>
+    <string name="save_button">Save</string>
+
+    <!-- vitals strings -->
+    <string name="heart_rate_button">"Heart Rate""\n""110 bpm"</string>
+    <string name="oxygen_saturation_button">"Oxygen Saturation""\n"92%"</string>
+    <string name="respiratory_rate_button">"Respiratory Rate""\n""8 bpm"</string>
+    <string name="temperature_button">"Temperature""\n""98.6 F"</string>
+    <string name="start_record_button">"Start Recording"</string>
+    <string name="stop_record_button">"Stop Recording"</string>
+    <string-array name="patients">
+        <item>Profile 1</item>
+        <item>Profile 2</item>
+        <item>Profile 3</item>
+        <item>Profile 4</item>
+        <item>Profile 5</item>
+        <item>Profile 6</item>
+    </string-array>
+
+    <!-- help/about strings -->
+    <string name="title_activity_help_about">helpAbout</string>
+    <string name="help_text">" Info on how to use the app
+        a
+        b
+        c
+        d
+        e
+        f
+        g
+        h
+        i
+        j
+        k
+        l
+        m
+        n
+        o
+        p
+        q
+        r
+        s
+        t
+        u
+        v
+        w
+        x
+        y
+        z"</string>
+    <string name="about_text">" About the app
+        a
+        b
+        c
+        d
+        e
+        f
+        g
+        h
+        i
+        j
+        k
+        l
+        m
+        n
+        o
+        p
+        q
+        r
+        s
+        t
+        u
+        v
+        w
+        x
+        y
+        z"</string>
+    <string name="legal_text">" Legal information
+        a
+        b
+        c
+        d
+        e
+        f
+        g
+        h
+        i
+        j
+        k
+        l
+        m
+        n
+        o
+        p
+        q
+        r
+        s
+        t
+        u
+        v
+        w
+        x
+        y
+        z"</string>
+    <string name="dob_hint">mm/dd/yyyy</string>
+    <string name="name_hint">Name</string>
+
+
+</resources>
