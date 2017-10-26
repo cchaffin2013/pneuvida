@@ -20,15 +20,27 @@ public class EditProfile extends AppCompatActivity {
 
         //profile menu intent receiver
         Bundle profileData = getIntent().getExtras();
-        final String patientName = profileData.getString("patientName");
+        final int patientID = profileData.getInt("patientID");
 
         //edit text fields
         EditText nameDisplay = (EditText) findViewById(R.id.name_edit_text);
         EditText dobDisplay = (EditText) findViewById(R.id.dob_edit_text);
+        EditText sexDisplay = (EditText) findViewById(R.id.sex_edit_text);
+        EditText heightDisplay = (EditText) findViewById(R.id.height_edit_text);
+        EditText weightDisplay = (EditText) findViewById(R.id.weight_edit_text);
+        EditText medsDisplay = (EditText) findViewById(R.id.meds_edit_text);
+        EditText allergiesDisplay = (EditText) findViewById(R.id.allergies_edit_text);
+        EditText notesDisplay = (EditText) findViewById(R.id.note_edit_text);
 
         //get edit text field values from database
-        nameDisplay.setText(patientName);
-        dobDisplay.setText(myDBHandler.dobToString(patientName));
+        nameDisplay.setText(myDBHandler.nameToString(patientID));
+        dobDisplay.setText(myDBHandler.dobToString(patientID));
+        sexDisplay.setText(myDBHandler.sexToString(patientID));
+        heightDisplay.setText(myDBHandler.heightToString(patientID));
+        weightDisplay.setText(myDBHandler.weightToString(patientID));
+        medsDisplay.setText(myDBHandler.medsToString(patientID));
+        allergiesDisplay.setText(myDBHandler.allergiesToString(patientID));
+        notesDisplay.setText(myDBHandler.notesToString(patientID));
 
         //buttons
         Button saveButton = (Button) findViewById(R.id.save_button);

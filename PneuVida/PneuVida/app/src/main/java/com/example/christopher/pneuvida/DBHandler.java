@@ -42,7 +42,7 @@ public class DBHandler extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "CREATE TABLE "+ TABLE_PATIENTS+ "(" +
-                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 COLUMN_NAME + " TEXT, " +
                 COLUMN_DOB + " TEXT, " +
                 COLUMN_SEX + " TEXT, " +
@@ -68,6 +68,12 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_NAME, patient.get_name());
         values.put(COLUMN_DOB, patient.get_dob());
+        values.put(COLUMN_SEX, patient.get_sex());
+        values.put(COLUMN_HEIGHT, patient.get_height());
+        values.put(COLUMN_WEIGHT, patient.get_weight());
+        values.put(COLUMN_MEDS, patient.get_meds());
+        values.put(COLUMN_ALLERGIES, patient.get_allergies());
+        values.put(COLUMN_NOTES, patient.get_notes());
         db.insert(TABLE_PATIENTS, null, values);
 
         db.close();
@@ -80,23 +86,23 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    /*name to string
-    public String nameToString(String name) {
+    //name to string
+    public String nameToString(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT "+ COLUMN_DOB + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_NAME + "=\"" + name + "\";";
-        String dob = "";
+        String query = "SELECT "+ COLUMN_NAME + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String name = "";
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
 
-        dob = c.getString(c.getColumnIndex("_dob"));
-        return dob;
-    }*/
+        name = c.getString(c.getColumnIndex("_name"));
+        return name;
+    }
 
     //dob to string
-    public String dobToString(String name) {
+    public String dobToString(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT "+ COLUMN_DOB + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_NAME + "=\"" + name + "\";";
+        String query = "SELECT "+ COLUMN_DOB + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
         String dob = "";
 
         Cursor c = db.rawQuery(query, null);
@@ -104,6 +110,84 @@ public class DBHandler extends SQLiteOpenHelper{
 
         dob = c.getString(c.getColumnIndex("_dob"));
         return dob;
+    }
+
+    //sex to string
+    public String sexToString(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_SEX + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String sex = "";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        sex = c.getString(c.getColumnIndex("_sex"));
+        return sex;
+    }
+
+    //height to string
+    public String heightToString(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_HEIGHT + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String height = "";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        height = c.getString(c.getColumnIndex("_height"));
+        return height;
+    }
+
+    //weight to string
+    public String weightToString(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_WEIGHT + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String weight = "";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        weight = c.getString(c.getColumnIndex("_weight"));
+        return weight;
+    }
+
+    //meds to string
+    public String medsToString(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_MEDS + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String meds = "";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        meds = c.getString(c.getColumnIndex("_meds"));
+        return meds;
+    }
+
+    //allergies to string
+    public String allergiesToString(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_ALLERGIES + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String allergies = "";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        allergies = c.getString(c.getColumnIndex("_allergies"));
+        return allergies;
+    }
+
+    //notes to string
+    public String notesToString(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_NOTES + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String notes = "";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        notes = c.getString(c.getColumnIndex("_notes"));
+        return notes;
     }
 
     //destroy database

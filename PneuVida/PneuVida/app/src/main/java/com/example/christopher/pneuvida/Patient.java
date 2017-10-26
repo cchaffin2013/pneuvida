@@ -15,8 +15,8 @@ public class Patient {
     public Patient() {
 
     }
-    public Patient(String name) {
-        this._name = name;
+    public Patient(int _id) {
+        this._id = _id;
     }
 
     public void set_id(int _id) {
