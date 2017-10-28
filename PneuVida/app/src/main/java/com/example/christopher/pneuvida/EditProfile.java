@@ -8,24 +8,47 @@ import android.widget.EditText;
 
 public class EditProfile extends AppCompatActivity {
 
+    //db handler
+    DBHandler myDBHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        //database handler
-        //DBHandler myDBHandler = DBHandler.getDBHandler(this);
+        //edit text fields
+        final EditText nameDisplay = (EditText) findViewById(R.id.name_edit_text);
+        final EditText dobDisplay = (EditText) findViewById(R.id.dob_edit_text);
+        final EditText sexDisplay = (EditText) findViewById(R.id.sex_edit_text);
+        final EditText heightDisplay = (EditText) findViewById(R.id.height_edit_text);
+        final EditText weightDisplay = (EditText) findViewById(R.id.weight_edit_text);
+        final EditText medsDisplay = (EditText) findViewById(R.id.meds_edit_text);
+        final EditText allergiesDisplay = (EditText) findViewById(R.id.allergies_edit_text);
+        final EditText notesDisplay = (EditText) findViewById(R.id.note_edit_text);
+
+        //db handler
+        myDBHandler = DBHandler.getDBHandler(this);
+
+        //for if there is a new patient
+        final Patient newPatient = new Patient("New Patient");;
 
         //profile menu intent receiver
         Bundle profileData = getIntent().getExtras();
-        final String patientName = profileData.getString("patientName");
-        final String dob = profileData.getString("dob");
-        EditText nameDisplay = (EditText) findViewById(R.id.name_edit_text);
-        EditText dobDisplay = (EditText) findViewById(R.id.dob_edit_text);
+        final int patientID = profileData.getInt("patientID");
 
-        nameDisplay.setText(patientName);
-        dobDisplay.setText(dob);
-        //dobDisplay.setText(myDBHandler.dobToString(patientName));
+        //id of 0 means new patient not in db
+        if(patientID == 0) { //if new patient, add new patient to db
+            myDBHandler.addPatient(newPatient);
+        } else { //if not, get edit text field values from database
+            nameDisplay.setText(myDBHandler.getName(patientID));
+            dobDisplay.setText(myDBHandler.getDOB(patientID));
+            sexDisplay.setText(myDBHandler.getSex(patientID));
+            heightDisplay.setText(myDBHandler.getHeight(patientID));
+            weightDisplay.setText(myDBHandler.getWeight(patientID));
+            medsDisplay.setText(myDBHandler.getMeds(patientID));
+            allergiesDisplay.setText(myDBHandler.getAllergies(patientID));
+            notesDisplay.setText(myDBHandler.getNotes(patientID));
+        }
 
         //buttons
         Button saveButton = (Button) findViewById(R.id.save_button);
@@ -35,8 +58,23 @@ public class EditProfile extends AppCompatActivity {
         saveButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        //save data to database
-
+                        int id;
+                        if(patientID == 0) { //if new patient, get their id from
+                                            // autoincremented id in database
+                            id = myDBHandler.getID("New Patient");
+                        } else { //if not just use the id sent from the intent
+                            id = patientID;
+                        }
+                        //save data to the patient associated with id
+                        myDBHandler.setName(nameDisplay.getText().toString(), id);
+                        myDBHandler.setDob(dobDisplay.getText().toString(), id);
+                        myDBHandler.setSex(sexDisplay.getText().toString(), id);
+                        myDBHandler.setHeight(heightDisplay.getText().toString(), id);
+                        myDBHandler.setWeight(weightDisplay.getText().toString(), id);
+                        myDBHandler.setMeds(medsDisplay.getText().toString(), id);
+                        myDBHandler.setAllergies(allergiesDisplay.getText().toString(), id);
+                        myDBHandler.setNotes(notesDisplay.getText().toString(), id);
+                        myDBHandler.close();
                         finish();//close activity after saving
                     }
                 }
@@ -45,6 +83,10 @@ public class EditProfile extends AppCompatActivity {
         cancelButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
+                        if (patientID == 0) { //if new patient, delete new patient from the database
+                            myDBHandler.deletePatient("New Patient");
+                        }
+                        myDBHandler.close();
                         finish();//close activity without saving changes
                     }
                 }

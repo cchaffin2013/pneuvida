@@ -67,20 +67,17 @@
             <Button
                 android:id="@+id/profile_1"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="@string/profile1" />
+                android:layout_height="100dp" />
 
             <Button
                 android:id="@+id/profile_2"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="@string/profile2" />
+                android:layout_height="100dp" />
 
             <Button
                 android:id="@+id/profile_3"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="@string/profile3" />
+                android:layout_height="100dp" />
 
             <Button
                 android:id="@+id/profile_4"

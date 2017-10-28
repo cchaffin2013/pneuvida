@@ -19,6 +19,7 @@ public class Patient {
         this._name = name;
     }
 
+    //settters
     public void set_id(int _id) {
         this._id = _id;
     }
@@ -59,6 +60,7 @@ public class Patient {
         return _id;
     }
 
+    //getters
     public String get_name() {
         return _name;
     }
