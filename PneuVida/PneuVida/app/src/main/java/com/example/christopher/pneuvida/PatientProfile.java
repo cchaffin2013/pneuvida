@@ -9,19 +9,21 @@ import android.widget.TextView;
 
 public class PatientProfile extends AppCompatActivity {
 
-    //db hanlder
+    //db handler
     DBHandler myDBHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_profile);
+    }
 
-         myDBHandler = DBHandler.getDBHandler(this);
-
-        //profile menu intent receiver
-        Bundle profileData = getIntent().getExtras();
-        final int patientID = profileData.getInt("patientID");
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //updates to display changes in database made in edit activity
+        //database handler
+        myDBHandler = DBHandler.getDBHandler(this);
 
         //text fields
         TextView nameDisplay = (TextView) findViewById(R.id.name_display);
@@ -33,15 +35,19 @@ public class PatientProfile extends AppCompatActivity {
         TextView allergiesDisplay = (TextView) findViewById(R.id.allergies_display);
         TextView notesDisplay = (TextView) findViewById(R.id.notes_display);
 
+        //profile menu intent receiver
+        Bundle profileData = getIntent().getExtras();
+        final int patientID = profileData.getInt("patientID");
+
         //get text field values from database
-        nameDisplay.setText(myDBHandler.nameToString(patientID));
-        dobDisplay.setText(myDBHandler.dobToString(patientID));
-        sexDisplay.setText(myDBHandler.sexToString(patientID));
-        heightDisplay.setText(myDBHandler.heightToString(patientID));
-        weightDisplay.setText(myDBHandler.weightToString(patientID));
-        medsDisplay.setText(myDBHandler.medsToString(patientID));
-        allergiesDisplay.setText(myDBHandler.allergiesToString(patientID));
-        notesDisplay.setText(myDBHandler.notesToString(patientID));
+        nameDisplay.setText(myDBHandler.getName(patientID));
+        dobDisplay.setText(myDBHandler.getDOB(patientID));
+        sexDisplay.setText(myDBHandler.getSex(patientID));
+        heightDisplay.setText(myDBHandler.getHeight(patientID));
+        weightDisplay.setText(myDBHandler.getWeight(patientID));
+        medsDisplay.setText(myDBHandler.getMeds(patientID));
+        allergiesDisplay.setText(myDBHandler.getAllergies(patientID));
+        notesDisplay.setText(myDBHandler.getNotes(patientID));
 
         //button to allow profile edit
         final ImageButton editButton = (ImageButton) findViewById(R.id.edit_button);
@@ -49,9 +55,9 @@ public class PatientProfile extends AppCompatActivity {
         editButton.setOnClickListener(
                 new ImageButton.OnClickListener() {
                     public void onClick(View v) {
-                    Intent editStart = new Intent(PatientProfile.this, EditProfile.class); //allow text to be edited which will edit the contents of the database
-                    editStart.putExtra("patientID", patientID);
-                    startActivity(editStart);
+                        Intent editStart = new Intent(PatientProfile.this, EditProfile.class); //allow text to be edited which will edit the contents of the database
+                        editStart.putExtra("patientID", patientID);
+                        startActivity(editStart);
                     }
                 }
         );
