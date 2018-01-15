@@ -18,21 +18,25 @@ import static com.example.christopher.pneuvida.R.string.stop_record_button;
 
 public class Vitals extends AppCompatActivity {
 
-    //buttons
-    final Button recordingButton = (Button) findViewById(R.id.recordButton);
-    final Button rrButton = (Button) findViewById((R.id.rr_button));
-    final Button osButton = (Button) findViewById((R.id.os_button));
-    final Button hrButton = (Button) findViewById((R.id.hr_button));
-    final Button temperatureButton = (Button) findViewById((R.id.temperature_button));
 
-    //text views
-    final TextView overallDistressText = (TextView) findViewById(R.id.overall_distress_text);
-    final TextView distressValueText = (TextView) findViewById(R.id.overall_distress_value);
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vitals);
+
+        //buttons
+        final Button recordingButton = (Button) findViewById(R.id.recordButton);
+        final Button rrButton = (Button) findViewById((R.id.rr_button));
+        final Button osButton = (Button) findViewById((R.id.os_button));
+        final Button hrButton = (Button) findViewById((R.id.hr_button));
+        final Button temperatureButton = (Button) findViewById((R.id.temperature_button));
+
+        //text views
+        final TextView overallDistressText = (TextView) findViewById(R.id.overall_distress_text);
+        final TextView distressValueText = (TextView) findViewById(R.id.overall_distress_value);
 
         //bluetooth setup
 
@@ -186,7 +190,7 @@ public class Vitals extends AppCompatActivity {
     }
 
     //color for respiratory rate
-    private void rrColor(int rr) {
+    private void rrColor(int rr, Button rrButton) {
         int rating = rrRating(rr);
         switch (rating) {
             case 2:                                   //severe distress
@@ -207,7 +211,7 @@ public class Vitals extends AppCompatActivity {
     }
 
     //color for blood oxygen saturation
-    private void osColor(int os) {
+    private void osColor(int os, Button osButton) {
         int rating = osRating(os);
         switch (rating) {
             case 2:                                   //severe distress
@@ -228,7 +232,7 @@ public class Vitals extends AppCompatActivity {
     }
 
     //color for heart rate
-    private void hrColor(int hr) {
+    private void hrColor(int hr, Button hrButton) {
         int rating = hrRating(hr);
         switch (rating) {
             case 2:                                   //severe distress
@@ -249,7 +253,7 @@ public class Vitals extends AppCompatActivity {
     }
 
     //color for temperature
-    private void tempColor(double temp) {
+    private void tempColor(double temp, Button temperatureButton) {
         int rating = temperatureRating(temp);
         switch (rating) {
             case 2:                                   //severe distress
@@ -270,7 +274,7 @@ public class Vitals extends AppCompatActivity {
     }
 
     //determine respiratory distress level
-    private void overallDistress(int rr, int os, int hr, int temperature) {
+    private void overallDistress(int rr, int os, int hr, int temperature, TextView overallDistressText, TextView distressValueText) {
         //determine overall distress level by calculating the weighted average of the vitals
         double overall = (rr * .4) + (os * .3) + (hr * .2) + (temperature * .1);
         //change color
