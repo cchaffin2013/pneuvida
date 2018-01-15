@@ -41,7 +41,8 @@ public class Home extends AppCompatActivity {
         settingsButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-
+                        Intent settignsStart = new Intent(Home.this, Settings.class);
+                        startActivity(settignsStart);
                     }
                 }
         );

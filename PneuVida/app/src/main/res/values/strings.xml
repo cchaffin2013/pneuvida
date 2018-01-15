@@ -5,9 +5,9 @@
 
     <!-- home strings -->
     <string name="vitals_display_button">Vitals Display</string>
-    <string name="help_info_button">Help/Info</string>
     <string name="patient_profiles_button">Patient Profiles</string>
     <string name="settings_button">Settings</string>
+    <string name="help_info_button">Help/About</string>
 
     <!-- patient profile strings -->
     <string name="height_text">Height</string>
@@ -16,15 +16,12 @@
     <string name="notes_text">Notes</string>
     <string name="sex_text">Sex</string>
     <string name="weight_text">Weight</string>
-    <string name="notes_hint">Any other notes about patients go here</string>
-    <string name="meds_hint">patient\'s medications</string>
     <string name="allergies_text">Allergies</string>
-    <string name="allergies_hint">patient\'s allergies</string>
     <string name="medications_text">Medications</string>
 
     <!-- patient profile menu strings -->
     <string name="add_profile_button">Add Profile</string>
-    <string name="delete_profile_button">Delete Profile</string>
+    <string name="delete_profile_button">Delete Profiles</string>
     <string name="profile1">Profile 1</string>
     <string name="profile2">Profile 2</string>
     <string name="profile3">Profile 3</string>
@@ -35,6 +32,11 @@
     <!-- edit profile strings -->
     <string name="cancel_button">Cancel</string>
     <string name="save_button">Save</string>
+    <string name="name_hint">Name</string>
+    <string name="dob_hint">mm/dd/yyyy</string>
+    <string name="meds_hint">patient\'s medications</string>
+    <string name="allergies_hint">patient\'s allergies</string>
+    <string name="notes_hint">Any other notes about patients go here</string>
 
     <!-- vitals strings -->
     <string name="heart_rate_button">"Heart Rate""\n""110 bpm"</string>
@@ -43,14 +45,6 @@
     <string name="temperature_button">"Temperature""\n""98.6 F"</string>
     <string name="start_record_button">"Start Recording"</string>
     <string name="stop_record_button">"Stop Recording"</string>
-    <string-array name="patients">
-        <item>Profile 1</item>
-        <item>Profile 2</item>
-        <item>Profile 3</item>
-        <item>Profile 4</item>
-        <item>Profile 5</item>
-        <item>Profile 6</item>
-    </string-array>
 
     <!-- help/about strings -->
     <string name="title_activity_help_about">helpAbout</string>
@@ -135,8 +129,18 @@
         x
         y
         z"</string>
-    <string name="dob_hint">mm/dd/yyyy</string>
-    <string name="name_hint">Name</string>
 
+    <!-- settings strings -->
+    <string name="delete_all_profiles_text">Delete all profiles</string>
+    <string name="light_dark_theme_text">Light/Dark theme</string>
+    <string name="delete_button_text">delete</string>
+
+    <!-- confirm strings -->
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="cancel_without_saving">Cancel without saving?</string>
+    <string name="save_confirm">Save recorded data?</string>
+    <string name="no_button_text">No</string>
+    <string name="yes_button_text">Yes</string>
+    <string name="overall_distress_text">Overall distress:</string>
 
 </resources>

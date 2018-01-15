@@ -1,10 +1,13 @@
 package com.example.christopher.pneuvida;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -30,7 +33,7 @@ public class EditProfile extends AppCompatActivity {
         myDBHandler = DBHandler.getDBHandler(this);
 
         //for if there is a new patient
-        final Patient newPatient = new Patient("New Patient");;
+        final Patient newPatient = new Patient("New Patient");
 
         //profile menu intent receiver
         Bundle profileData = getIntent().getExtras();
@@ -75,6 +78,7 @@ public class EditProfile extends AppCompatActivity {
                         myDBHandler.setAllergies(allergiesDisplay.getText().toString(), id);
                         myDBHandler.setNotes(notesDisplay.getText().toString(), id);
                         myDBHandler.close();
+                        Toast.makeText(EditProfile.this, "Changes Saved", Toast.LENGTH_SHORT).show();
                         finish();//close activity after saving
                     }
                 }
@@ -83,11 +87,42 @@ public class EditProfile extends AppCompatActivity {
         cancelButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        if (patientID == 0) { //if new patient, delete new patient from the database
-                            myDBHandler.deletePatient("New Patient");
-                        }
-                        myDBHandler.close();
-                        finish();//close activity without saving changes
+
+                        //opens alert dialog to confirm deletion of database
+                        final AlertDialog.Builder myBuilder = new AlertDialog.Builder(EditProfile.this);
+                        View confirmView = getLayoutInflater().inflate(R.layout.confirm, null);
+
+                        //make the dialog box actually show up
+                        myBuilder.setView(confirmView);
+                        final AlertDialog dialog = myBuilder.create();
+                        dialog.show();
+
+                        Button yButton = (Button) confirmView.findViewById(R.id.yes_button);
+                        Button nButton = (Button) confirmView.findViewById(R.id.no_button);
+                        TextView dialogMessage = (TextView) confirmView.findViewById(R.id.dialog_message);
+
+                        dialogMessage.setText(R.string.cancel_without_saving);
+
+                        yButton.setOnClickListener( //confirms deletion then closes dialog
+                                new Button.OnClickListener() {
+                                    public void onClick(View v) {
+                                        //if new patient, delete new patient from the database
+                                        myDBHandler.deletePatient("New Patient");
+
+                                        myDBHandler.close();
+                                        dialog.dismiss();
+                                        finish();//close activity without saving changes
+                                    }
+                                }
+                        );
+
+                        nButton.setOnClickListener( //closes dialog without deleting
+                                new Button.OnClickListener() {
+                                    public void onClick(View v) {
+                                        dialog.hide();
+                                    }
+                                }
+                        );
                     }
                 }
         );

@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DBHandler extends SQLiteOpenHelper{
 
     private static final int DATABASE_VERSION = 1;
@@ -79,7 +82,14 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    //delete row
+    //delete row based on id
+    public void deletePatient(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";" );
+        db.close();
+    }
+
+    //delete row based on name
     public void deletePatient(String name) {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_NAME + "=\"" + name + "\";" );
@@ -97,6 +107,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         name = c.getString(c.getColumnIndex("_name"));
+        db.close();
         return name;
     }
 
@@ -109,6 +120,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         int id = c.getInt(c.getColumnIndex("_id"));
+        db.close();
         return id;
     }
 
@@ -122,6 +134,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         dob = c.getString(c.getColumnIndex("_dob"));
+        db.close();
         return dob;
     }
 
@@ -135,6 +148,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         sex = c.getString(c.getColumnIndex("_sex"));
+        db.close();
         return sex;
     }
 
@@ -148,6 +162,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         height = c.getString(c.getColumnIndex("_height"));
+        db.close();
         return height;
     }
 
@@ -161,6 +176,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         weight = c.getString(c.getColumnIndex("_weight"));
+        db.close();
         return weight;
     }
 
@@ -174,6 +190,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         meds = c.getString(c.getColumnIndex("_meds"));
+        db.close();
         return meds;
     }
 
@@ -187,6 +204,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         allergies = c.getString(c.getColumnIndex("_allergies"));
+        db.close();
         return allergies;
     }
 
@@ -200,6 +218,7 @@ public class DBHandler extends SQLiteOpenHelper{
         c.moveToFirst();
 
         notes = c.getString(c.getColumnIndex("_notes"));
+        db.close();
         return notes;
     }
 
@@ -210,6 +229,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_NAME, name);
         db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
     }
 
     public void setDob(String dob, int id) {
@@ -218,6 +238,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_DOB, dob);
         db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
     }
 
     public void setSex(String sex, int id) {
@@ -226,6 +247,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_SEX, sex);
         db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
     }
 
     public void setHeight(String height, int id) {
@@ -234,6 +256,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_HEIGHT, height);
         db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
     }
 
     public void setWeight(String weight, int id) {
@@ -242,6 +265,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_WEIGHT, weight);
         db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
     }
 
     public void setMeds(String meds, int id) {
@@ -250,6 +274,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_MEDS, meds);
         db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
     }
 
     public void setAllergies(String allergies, int id) {
@@ -258,6 +283,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_ALLERGIES, allergies);
         db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
     }
 
     public void setNotes(String notes, int id) {
@@ -266,6 +292,25 @@ public class DBHandler extends SQLiteOpenHelper{
 
         values.put(COLUMN_NOTES, notes);
         db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
+    }
+
+    //database IDs to List
+    public List toList() {
+        List<Integer> patientIDs = new ArrayList<Integer>();
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT " + COLUMN_ID + " FROM " + TABLE_PATIENTS + " WHERE 1";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        while(!c.isAfterLast()) {//loops through db and adds patient names to list
+            patientIDs.add(c.getInt(c.getColumnIndex("_id")));
+            c.moveToNext();
+        }
+        db.close();
+
+        return patientIDs;
     }
 
     //destroy database
@@ -273,5 +318,6 @@ public class DBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PATIENTS);
         onCreate(db);
+        db.close();
     }
 }
