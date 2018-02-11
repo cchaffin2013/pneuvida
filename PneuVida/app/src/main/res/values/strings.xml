@@ -39,10 +39,11 @@
     <string name="notes_hint">Any other notes about patients go here</string>
 
     <!-- vitals strings -->
-    <string name="heart_rate_button">"Heart Rate""\n""110 bpm"</string>
-    <string name="oxygen_saturation_button">"Oxygen Saturation""\n"92%"</string>
-    <string name="respiratory_rate_button">"Respiratory Rate""\n""8 bpm"</string>
-    <string name="temperature_button">"Temperature""\n""98.6 F"</string>
+    <string name="respiratory_rate_button">"Respiratory Rate""\n""33 bpm"</string>
+    <string name="oxygen_saturation_button">"Oxygen Saturation""\n"91%"</string>
+    <string name="heart_rate_button">"Heart Rate""\n""75 bpm"</string>
+    <string name="temperature_button">"Temperature""\n""99.1 F"</string>
+    <string name="overall_distress_text">Overall distress:</string>
     <string name="start_record_button">"Start Recording"</string>
     <string name="stop_record_button">"Stop Recording"</string>
 
@@ -135,12 +136,17 @@
     <string name="light_dark_theme_text">Light/Dark theme</string>
     <string name="delete_button_text">delete</string>
 
+    <!--bluetooth activity strings-->
+    <string name="bt_title_text">Select Bluetooth Device</string>
+
     <!-- confirm strings -->
     <string name="are_you_sure">Are you sure?</string>
     <string name="cancel_without_saving">Cancel without saving?</string>
     <string name="save_confirm">Save recorded data?</string>
     <string name="no_button_text">No</string>
     <string name="yes_button_text">Yes</string>
-    <string name="overall_distress_text">Overall distress:</string>
+    <string name="distress_value">N/A</string>
+
+
 
 </resources>

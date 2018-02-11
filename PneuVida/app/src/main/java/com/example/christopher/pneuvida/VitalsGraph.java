@@ -51,4 +51,5 @@ public class VitalsGraph extends AppCompatActivity {
 
         vitalsGraph.setVisibleXRangeMaximum(65f);
     }
+
 }

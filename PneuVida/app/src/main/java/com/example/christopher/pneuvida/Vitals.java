@@ -1,7 +1,11 @@
 package com.example.christopher.pneuvida;
 
+import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +21,42 @@ import java.util.List;
 import static com.example.christopher.pneuvida.R.string.start_record_button;
 import static com.example.christopher.pneuvida.R.string.stop_record_button;
 
-public class Vitals extends AppCompatActivity {
+public class Vitals extends Bluetooth {
 
+    //bluetooth handler
+    @SuppressLint("HandlerLeak")
+    Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg)  {
+            super.handleMessage(msg);
+            switch(msg.what){
+                case Bluetooth.SUCCESS_CONNECT:
+                    Bluetooth.connectedThread = new Bluetooth.ConnectedThread((BluetoothSocket)msg.obj);
+                    Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_SHORT).show();
+                    String s = "successfully connected";
+                    Bluetooth.connectedThread.start();
+                    break;
+                case Bluetooth.MESSAGE_READ:
 
+                    byte[] readBuf = (byte[]) msg.obj;
+                    String strIncom = new String(readBuf, 0, 5);                 // create string from bytes array
+                    Toast.makeText(getApplicationContext(),strIncom, Toast.LENGTH_LONG);     //display message received
 
+            }
+        }
 
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vitals);
+
+        //go to bluetooth activity to enable bt and connect to device
+        Intent bluetoothStart = new Intent(Vitals.this, Bluetooth.class);
+        startActivity(bluetoothStart);
+
+        Bluetooth.getHandler(mHandler);
 
         //buttons
         final Button recordingButton = (Button) findViewById(R.id.recordButton);
@@ -37,8 +68,6 @@ public class Vitals extends AppCompatActivity {
         //text views
         final TextView overallDistressText = (TextView) findViewById(R.id.overall_distress_text);
         final TextView distressValueText = (TextView) findViewById(R.id.overall_distress_value);
-
-        //bluetooth setup
 
         //database handler
         DBHandler myDBHandler = DBHandler.getDBHandler(Vitals.this);
@@ -58,6 +87,8 @@ public class Vitals extends AppCompatActivity {
         patientAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         patientSelect.setAdapter(patientAdapter);
 
+        //tset overall distress gradient
+        overallDistress(2,6,10,6, overallDistressText,distressValueText);
 
         //click listeners
         rrButton.setOnClickListener(
@@ -98,13 +129,11 @@ public class Vitals extends AppCompatActivity {
                     public void onClick(View v){
                         if(recordingButton.getText().equals("Start Recording")) { //changes button text when clicked
                             recordingButton.setText(stop_record_button);
-                            //change icon
                             //grey out spinner
                             patientSelect.setEnabled(false);
                             //record data for for currently selected profile
                         } else {
                             recordingButton.setText(start_record_button);
-                            //change icon
                             //confirm data save
                             final AlertDialog.Builder myBuilder = new AlertDialog.Builder(Vitals.this);
                             View confirmView = getLayoutInflater().inflate(R.layout.confirm, null);
@@ -274,23 +303,24 @@ public class Vitals extends AppCompatActivity {
     }
 
     //determine respiratory distress level
-    private void overallDistress(int rr, int os, int hr, int temperature, TextView overallDistressText, TextView distressValueText) {
+    private void overallDistress(int os, int rr, int hr, int temperature, TextView overallDistressText, TextView distressValueText) {
         //determine overall distress level by calculating the weighted average of the vitals
-        double overall = (rr * .4) + (os * .3) + (hr * .2) + (temperature * .1);
+        double overall = (os * .4) + (rr * .3) + (hr * .2) + (temperature * .1);
         //change color
         //add color gradients
         //temporary values, work on getting these nailed down
         if (overall > 7.6) {
-            overallDistressText.setBackgroundColor(0x23df0e); //green
-            distressValueText.setBackgroundColor(0x23df0e);
+            overallDistressText.setBackgroundResource(R.color.noDistress); //green
+            distressValueText.setBackgroundResource(R.color.noDistress);
         } else if (overall > 4) {
-            overallDistressText.setBackgroundColor(0xf7f713); //yellow
-            distressValueText.setBackgroundColor(0xf7f713);
+            overallDistressText.setBackgroundResource(R.color.mildDistress); //yellow
+            distressValueText.setBackgroundResource(R.color.mildDistress);
         } else {
-            overallDistressText.setBackgroundColor(0xed0d0d); //red
-            distressValueText.setBackgroundColor(0xed0d0d);
+            overallDistressText.setBackgroundResource(R.color.severeDistress); //red
+            distressValueText.setBackgroundResource(R.color.severeDistress);
         }
         //display overall rating number
-        distressValueText.setText(String.valueOf(overall));
+        distressValueText.setText(String.format("%.2f", overall));
     }
+
 }

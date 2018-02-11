@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
         android:layout_marginTop="32dp"
-        android:background="@color/mildDistress"
         android:text="@string/overall_distress_text"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
@@ -25,8 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="60dp"
         android:layout_marginTop="32dp"
-        android:background="@color/mildDistress"
-        android:text="N/A"
+        android:text="@string/distress_value"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
         app:layout_constraintEnd_toEndOf="@+id/gridLayout"
@@ -77,32 +75,32 @@
         tools:layout_constraintLeft_creator="1">
 
         <Button
-            android:id="@+id/rr_button"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:backgroundTint="@color/severeDistress"
-            android:text="@string/respiratory_rate_button"
-            android:textAlignment="center" />
-
-        <Button
             android:id="@+id/os_button"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:backgroundTint="@color/mildDistress"
+            android:backgroundTint="@color/severeDistress"
             android:text="@string/oxygen_saturation_button" />
+
+        <Button
+            android:id="@+id/rr_button"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:backgroundTint="@color/mildDistress"
+            android:text="@string/respiratory_rate_button"
+            android:textAlignment="center" />
 
         <Button
             android:id="@+id/hr_button"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:backgroundTint="@color/mildDistress"
+            android:backgroundTint="@color/noDistress"
             android:text="@string/heart_rate_button" />
 
         <Button
             android:id="@+id/temperature_button"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:backgroundTint="@color/noDistress"
+            android:backgroundTint="@color/mildDistress"
             android:text="@string/temperature_button" />
 
     </GridLayout>
