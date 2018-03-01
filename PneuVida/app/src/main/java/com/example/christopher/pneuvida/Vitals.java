@@ -1,11 +1,12 @@
 package com.example.christopher.pneuvida;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -15,48 +16,38 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.example.christopher.pneuvida.R.string.start_record_button;
 import static com.example.christopher.pneuvida.R.string.stop_record_button;
 
-public class Vitals extends Bluetooth {
+public class Vitals extends AppCompatActivity {
+    final int RECIEVE_MESSAGE = 1;        // Status  for Handler
+    private BluetoothAdapter btAdapter = null;
+    private BluetoothSocket btSocket = null;
+    private StringBuilder sb = new StringBuilder();
 
-    //bluetooth handler
+    private ConnectedThread mConnectedThread;
+
+    // SPP UUID service
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+
+    // MAC-address of Bluetooth module
+    private static String address = "00:14:03:06:41:DD";
+
+    //Bluetooth handler
+    Handler h;
+
     @SuppressLint("HandlerLeak")
-    Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg)  {
-            super.handleMessage(msg);
-            switch(msg.what){
-                case Bluetooth.SUCCESS_CONNECT:
-                    Bluetooth.connectedThread = new Bluetooth.ConnectedThread((BluetoothSocket)msg.obj);
-                    Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_SHORT).show();
-                    String s = "successfully connected";
-                    Bluetooth.connectedThread.start();
-                    break;
-                case Bluetooth.MESSAGE_READ:
-
-                    byte[] readBuf = (byte[]) msg.obj;
-                    String strIncom = new String(readBuf, 0, 5);                 // create string from bytes array
-                    Toast.makeText(getApplicationContext(),strIncom, Toast.LENGTH_LONG);     //display message received
-
-            }
-        }
-
-    };
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vitals);
-
-        //go to bluetooth activity to enable bt and connect to device
-        Intent bluetoothStart = new Intent(Vitals.this, Bluetooth.class);
-        startActivity(bluetoothStart);
-
-        Bluetooth.getHandler(mHandler);
 
         //buttons
         final Button recordingButton = (Button) findViewById(R.id.recordButton);
@@ -80,6 +71,61 @@ public class Vitals extends Bluetooth {
             patientNames.add(myDBHandler.getName(patientIDs.get(i)));
         }
 
+        //find better way to do this
+        final int[] vitalsArray = new int[4];
+
+        //Bluetooth handler
+        h = new Handler() {
+            public void handleMessage(android.os.Message msg) {
+                switch (msg.what) {
+                    case RECIEVE_MESSAGE:                                                   // if receive massage
+                        byte[] readBuf = (byte[]) msg.obj;
+                        String strIncom = new String(readBuf, 0, msg.arg1);                 // create string from bytes array
+                        sb.append(strIncom);                                                // append string
+                        int endOfLineIndex = sb.indexOf("\r\n");                            // determine the end-of-line
+                        int vitalValue;
+                        if (endOfLineIndex > 0) {                                            // if end-of-line,
+                            String sbprint = sb.substring(0, endOfLineIndex);               // extract string
+                            sb.delete(0, sb.length());                                      // and clear
+                            switch (sbprint.substring(0,1)) {
+                                case "o":
+                                    vitalValue = Integer.parseInt(sbprint.substring(1));
+                                    osButton.setText("Oxygen Saturation\n" + vitalValue +"%");
+                                    osColor(vitalValue, osButton);
+                                    vitalsArray[0] = vitalValue;
+                                    break;
+                                case "r":
+                                    vitalValue = Integer.parseInt(sbprint.substring(1));
+                                    rrButton.setText("Respiratory Rate\n" + vitalValue + " BPM");
+                                    rrColor(vitalValue, rrButton);
+                                    vitalsArray[1] = vitalValue;
+                                    break;
+                                case "h":
+                                    vitalValue = Integer.parseInt(sbprint.substring(1));
+                                    hrButton.setText("Heart Rate\n" + vitalValue + " BPM");
+                                    hrColor(vitalValue, hrButton);
+                                    vitalsArray[2] = vitalValue;
+                                    break;
+                                case "t":
+                                    vitalValue = Integer.parseInt(sbprint.substring(1));
+                                    temperatureButton.setText("Temperature\n" + vitalValue + " F");
+                                    tempColor((double) vitalValue, temperatureButton);
+                                    vitalsArray[3] = vitalValue;
+                                    break;
+                                default:
+                                    overallDistress(vitalsArray[0], vitalsArray[1], vitalsArray[2], vitalsArray[3], overallDistressText, distressValueText);
+                                    break;
+                            }
+                        }
+                        break;
+                }
+            }
+        };
+
+        // get Bluetooth adapter
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        checkBTState();
+
         //sets up drop down menu called a spinner to get patients from database
         final Spinner patientSelect = (Spinner) findViewById(R.id.patient_select);
         ArrayAdapter<String> patientAdapter = new ArrayAdapter<String>(Vitals.this,
@@ -87,16 +133,14 @@ public class Vitals extends Bluetooth {
         patientAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         patientSelect.setAdapter(patientAdapter);
 
-        //tset overall distress gradient
-        overallDistress(2,6,10,6, overallDistressText,distressValueText);
-
         //click listeners
         rrButton.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         Intent graphStart = new Intent(Vitals.this, VitalsGraph.class);
-                        //add extra intent data to indicate which vital value is being sent
+                        graphStart.putExtra("vital", "Respiratory Rate");//add extra intent data to indicate which vital value is being sent
                         startActivity(graphStart);
+
                     }
                 }
         );
@@ -104,6 +148,7 @@ public class Vitals extends Bluetooth {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         Intent graphStart = new Intent(Vitals.this, VitalsGraph.class);
+                        graphStart.putExtra("vital", "Blood O2 Saturation");//add extra intent data to indicate which vital value is being sent
                         startActivity(graphStart);
                     }
                 }
@@ -112,6 +157,7 @@ public class Vitals extends Bluetooth {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         Intent graphStart = new Intent(Vitals.this, VitalsGraph.class);
+                        graphStart.putExtra("vital", "Heart Rate");//add extra intent data to indicate which vital value is being sent
                         startActivity(graphStart);
                     }
                 }
@@ -120,6 +166,7 @@ public class Vitals extends Bluetooth {
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         Intent graphStart = new Intent(Vitals.this, VitalsGraph.class);
+                        graphStart.putExtra("vital", "Temperature");//add extra intent data to indicate which vital value is being sent
                         startActivity(graphStart);
                     }
                 }
@@ -131,7 +178,9 @@ public class Vitals extends Bluetooth {
                             recordingButton.setText(stop_record_button);
                             //grey out spinner
                             patientSelect.setEnabled(false);
-                            //record data for for currently selected profile
+                            //start recording
+                            mConnectedThread.write("1");
+
                         } else {
                             recordingButton.setText(start_record_button);
                             //confirm data save
@@ -167,12 +216,145 @@ public class Vitals extends Bluetooth {
                             //restore spinner
                             patientSelect.setEnabled(true);
                             //end recording
+                            mConnectedThread.write("0");
                         }
                     }
                 }
         );
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Set up a pointer to the remote node using it's address.
+        BluetoothDevice device = btAdapter.getRemoteDevice(address);
+
+        // Two things are needed to make a connection:
+        //   A MAC address, which we got above.
+        //   A Service ID or UUID.  In this case we are using the
+        //     UUID for SPP.
+
+        try {
+            btSocket = createBluetoothSocket(device);
+        } catch (IOException e) {
+            errorExit("Fatal Error", "In onResume() and socket create failed: " + e.getMessage() + ".");
+        }
+
+        // Discovery is resource intensive.  Make sure it isn't going on
+        // when you attempt to connect and pass your message.
+        btAdapter.cancelDiscovery();
+
+        // Establish the connection.  This will block until it connects.
+        try {
+            btSocket.connect();
+            Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            try {
+                btSocket.close();
+            } catch (IOException e2) {
+                errorExit("Fatal Error", "In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
+            }
+        }
+
+        // Create a data stream so we can talk to server.
+        mConnectedThread = new ConnectedThread(btSocket);
+        mConnectedThread.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        try     {
+            btSocket.close();
+        } catch (IOException e2) {
+            errorExit("Fatal Error", "In onPause() and failed to close socket." + e2.getMessage() + ".");
+        }
+    }
+
+    //Bluetooth methods
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+
+            try {
+                final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", new Class[] { UUID.class });
+                return (BluetoothSocket) m.invoke(device, MY_UUID);
+            } catch (Exception e) {
+
+            }
+
+        return  device.createRfcommSocketToServiceRecord(MY_UUID);
+    }
+
+    private void checkBTState() {
+        // Check for Bluetooth support and then check to make sure it is turned on
+        // Emulator doesn't support Bluetooth and will return null
+        if(btAdapter==null) {
+            errorExit("Fatal Error", "Bluetooth not support");
+        } else {
+            if (btAdapter.isEnabled()) {
+
+            } else {
+                //Prompt user to turn on Bluetooth
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, 1);
+            }
+        }
+    }
+
+    private void errorExit(String title, String message){
+        Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    private class ConnectedThread extends Thread {
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+        public ConnectedThread(BluetoothSocket socket) {
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            // Get the input and output streams, using temp objects because
+            // member streams are final
+            try {
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
+            } catch (IOException e) { }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        public void run() {
+            byte[] buffer = new byte[256];  // buffer store for the stream
+            int bytes; // bytes returned from read()
+
+            // Keep listening to the InputStream until an exception occurs
+            while (true) {
+                try {
+                    // Read from the InputStream
+                    bytes = mmInStream.read(buffer);        // Get number of bytes and message in "buffer"
+                    h.obtainMessage(RECIEVE_MESSAGE, bytes, -1, buffer).sendToTarget();     // Send to message queue Handler
+                } catch (IOException e) {
+                    break;
+                }
+            }
+        }
+
+        /* Call this from the main activity to send data to the remote device */
+        public void write(String message) {
+
+            byte[] msgBuffer = message.getBytes();
+            try {
+                mmOutStream.write(msgBuffer);
+            } catch (IOException e) {
+
+            }
+        }
+    }
+
+    //Vitals ratings
     //make these able to vary with patient age
     //rating for respiratory rate
     private int rrRating(int rr) {
@@ -223,15 +405,15 @@ public class Vitals extends Bluetooth {
         int rating = rrRating(rr);
         switch (rating) {
             case 2:                                   //severe distress
-                rrButton.setBackgroundColor(0xed0d0d);//red
+                rrButton.setBackgroundResource(R.color.severeDistress);//red
                 break;
 
             case 6:                                   //mild distress
-                rrButton.setBackgroundColor(0xf7f713);//yellow
+                rrButton.setBackgroundResource(R.color.mildDistress);//yellow
                 break;
 
             case 10:                                  //no distress
-                rrButton.setBackgroundColor(0x23df0e);//green
+                rrButton.setBackgroundResource(R.color.noDistress);//green
                 break;
 
             default:
@@ -244,15 +426,15 @@ public class Vitals extends Bluetooth {
         int rating = osRating(os);
         switch (rating) {
             case 2:                                   //severe distress
-                osButton.setBackgroundColor(0xed0d0d);//red
+                osButton.setBackgroundResource(R.color.severeDistress);//red
                 break;
 
             case 6:                                   //mild distress
-                osButton.setBackgroundColor(0xf7f713);//yellow
+                osButton.setBackgroundResource(R.color.mildDistress);//yellow
                 break;
 
             case 10:                                  //no distress
-                osButton.setBackgroundColor(0x23df0e);//green
+                osButton.setBackgroundResource(R.color.noDistress);//green
                 break;
 
             default:
@@ -265,15 +447,15 @@ public class Vitals extends Bluetooth {
         int rating = hrRating(hr);
         switch (rating) {
             case 2:                                   //severe distress
-                hrButton.setBackgroundColor(0xed0d0d);//red
+                hrButton.setBackgroundResource(R.color.severeDistress);//red
                 break;
 
             case 6:                                   //mild distress
-                hrButton.setBackgroundColor(0xf7f713);//yellow
+                hrButton.setBackgroundResource(R.color.mildDistress);//yellow
                 break;
 
             case 10:                                  //no distress
-                hrButton.setBackgroundColor(0x23df0e);//green
+                hrButton.setBackgroundResource(R.color.noDistress);//green
                 break;
 
             default:
@@ -286,15 +468,15 @@ public class Vitals extends Bluetooth {
         int rating = temperatureRating(temp);
         switch (rating) {
             case 2:                                   //severe distress
-                temperatureButton.setBackgroundColor(0xed0d0d);//red
+                temperatureButton.setBackgroundResource(R.color.severeDistress);//red
                 break;
 
             case 6:                                   //mild distress
-                temperatureButton.setBackgroundColor(0xf7f713);//yellow
+                temperatureButton.setBackgroundResource(R.color.mildDistress);//yellow
                 break;
 
             case 10:                                  //no distress
-                temperatureButton.setBackgroundColor(0x23df0e);//green
+                temperatureButton.setBackgroundResource(R.color.noDistress);//green
                 break;
 
             default:
@@ -302,7 +484,7 @@ public class Vitals extends Bluetooth {
         }
     }
 
-    //determine respiratory distress level
+    //determine overall respiratory distress level
     private void overallDistress(int os, int rr, int hr, int temperature, TextView overallDistressText, TextView distressValueText) {
         //determine overall distress level by calculating the weighted average of the vitals
         double overall = (os * .4) + (rr * .3) + (hr * .2) + (temperature * .1);
