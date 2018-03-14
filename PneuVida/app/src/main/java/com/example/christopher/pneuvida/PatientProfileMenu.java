@@ -1,16 +1,26 @@
 package com.example.christopher.pneuvida;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PatientProfileMenu extends AppCompatActivity {
 
     //database handler
     DBHandler myDBHandler;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,103 +28,138 @@ public class PatientProfileMenu extends AppCompatActivity {
         setContentView(R.layout.activity_patient_profile_menu);
 
         //database handler
-         myDBHandler = DBHandler.getDBHandler(this);
-
-        //temporary patients for testing, this will be deleted later
-        myDBHandler.destroy();
-        final Patient patient1 = new Patient("John Doe");
-        patient1.set_id(1);
-        patient1.set_dob("05/25/51");
-        patient1.set_sex("male");
-        patient1.set_height("6 ft");
-        patient1.set_weight("160 lbs");
-        patient1.set_meds("pneumonia meds");
-        patient1.set_allergies("penicillin");
-        patient1.set_notes("This is a test");
-        myDBHandler.addPatient(patient1);
-        final Patient patient2 = new Patient("Jane Doe");
-        patient2.set_id(2);
-        patient2.set_dob("03/18/2012");
-        patient2.set_sex("female");
-        patient2.set_height("3 ft");
-        patient2.set_weight("50 lbs");
-        patient2.set_meds("pneumonia meds");
-        patient2.set_allergies("none");
-        patient2.set_notes("This is a test");
-        myDBHandler.addPatient(patient2);
-        final Patient patient3 = new Patient("Jack doe");
-        patient3.set_id(3);
-        patient3.set_dob("05/25/85");
-        patient3.set_sex("male");
-        patient3.set_height("6 ft");
-        patient3.set_weight("180");
-        patient3.set_meds("pneumonia meds");
-        patient3.set_allergies("none");
-        patient3.set_notes("This is still a test");
-        myDBHandler.addPatient(patient3);
-
+        myDBHandler = DBHandler.getDBHandler(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         //buttons
-        final Button profile1 = (Button) findViewById(R.id.profile_1);
-        final Button profile2 = (Button) findViewById(R.id.profile_2);
-        final Button profile3 = (Button) findViewById(R.id.profile_3);
         final Button addProfile = (Button) findViewById(R.id.add_profile_button);
-        final Button deleteProfile = (Button) findViewById(R.id.delete_profile_button);
+        final Button deleteProfiles = (Button) findViewById(R.id.delete_profile_button);
 
-        //temporary for testing
-        profile1.setText(myDBHandler.getName(1));
-        profile2.setText(myDBHandler.getName(2));
-        profile3.setText(myDBHandler.getName(3));
+        //creates list view that pulls data from database
+        //find better way to fix same name problem
+        final List<Integer> patientIDs = myDBHandler.toList();
+        List<String> patientNames = new ArrayList<String>();
 
-        //button click listeners
+        for(int i = 0; i < patientIDs.size(); i++) {
+            patientNames.add(myDBHandler.getName(patientIDs.get(i)));
+        }
+
+        //sets up list view to get patients from database
+        final ListAdapter myAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, patientNames);
+        ListView myListView = (ListView) findViewById(R.id.prof_list_view);
+        myListView.setAdapter(myAdapter);
+
+        //for delete profiles dialog
+        final String[] names = patientNames.toArray(new String[patientNames.size()]);
+        final boolean[] checkedProfiles = new boolean[names.length];
+        final ArrayList<Integer> toBeDeleted = new ArrayList<Integer>();
+
+        //click listeners
         addProfile.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
                         Intent newProfileStart = new Intent(PatientProfileMenu.this, EditProfile.class);
-                        newProfileStart.putExtra("patientID", 0);
+
+                        newProfileStart.putExtra("patientID", 0);//tells edit profile activity that this is a new profile
+
                         startActivity(newProfileStart);
                     }
                 }
         );
 
-        deleteProfile.setOnClickListener(
+        deleteProfiles.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
+                        final AlertDialog.Builder myBuilder = new AlertDialog.Builder(PatientProfileMenu.this);
+                        myBuilder.setTitle("Select profiles to delete");
 
+                        myBuilder.setMultiChoiceItems(names, checkedProfiles, new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int position, boolean isChecked) {
+                                if(isChecked) {
+                                    if(!toBeDeleted.contains(position)){
+                                        toBeDeleted.add(position);
+                                    } else {
+                                        toBeDeleted.remove(position);
+                                    }
+                                }
+                            }
+                        });
+                        myBuilder.setCancelable(false);
+
+                        //deletes selected patients
+                        myBuilder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                final AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(PatientProfileMenu.this);
+                                View confirmView = getLayoutInflater().inflate(R.layout.confirm, null);
+
+                                //make the dialog box actually show up
+                                confirmBuilder.setView(confirmView);
+                                final AlertDialog confirmation = confirmBuilder.create();
+                                confirmation.show();
+
+                                Button yButton = (Button) confirmView.findViewById(R.id.yes_button);
+                                Button nButton = (Button) confirmView.findViewById(R.id.no_button);
+                                TextView dialogMessage = (TextView) confirmView.findViewById(R.id.dialog_message);
+
+                                dialogMessage.setText(R.string.are_you_sure);
+
+                                yButton.setOnClickListener( //confirms deletion then closes dialog
+                                        new Button.OnClickListener() {
+                                            public void onClick(View v) {
+                                                int id;
+
+                                                for (int i = 0; i < toBeDeleted.size(); i++) {
+                                                    id = patientIDs.get(toBeDeleted.get(i));
+                                                    myDBHandler.deletePatient(id);
+                                                }
+                                                confirmation.dismiss();
+                                                onResume();
+                                                Toast.makeText(PatientProfileMenu.this, "Selected profiles deleted", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                );
+
+                                nButton.setOnClickListener( //closes dialog without deleting
+                                        new Button.OnClickListener() {
+                                            public void onClick(View v) {
+                                                confirmation.dismiss();
+                                            }
+                                        }
+                                );
+                            }
+                        });
+
+                        myBuilder.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        AlertDialog deleteProfileDialog = myBuilder.create();
+                        deleteProfileDialog.show();
                     }
                 }
         );
 
-        profile1.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
-                        Intent profileStart = new Intent(PatientProfileMenu.this, PatientProfile.class);
-                        profileStart.putExtra("patientID", 1);
-                        startActivity(profileStart);
-                    }
-                }
-        );
 
-        profile2.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
-                        Intent profileStart = new Intent(PatientProfileMenu.this, PatientProfile.class);
-                        profileStart.putExtra("patientID", 2);
-                        startActivity(profileStart);
-                    }
-                }
-        );
+        myListView.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent patientProfileStart = new Intent(PatientProfileMenu.this, PatientProfile.class);
 
-        profile3.setOnClickListener(
-                new Button.OnClickListener() {
-                    public void onClick(View v) {
-                        Intent profileStart = new Intent(PatientProfileMenu.this, PatientProfile.class);
-                        profileStart.putExtra("patientID", 3);
-                        startActivity(profileStart);
+                        int patientId = patientIDs.get(position);
+
+                        patientProfileStart.putExtra("patientID", patientId);
+                        startActivity(patientProfileStart);
                     }
                 }
         );

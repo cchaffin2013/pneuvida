@@ -6,6 +6,29 @@
     android:layout_height="match_parent"
     tools:context="com.example.christopher.pneuvida.Vitals">
 
+    <TextView
+        android:id="@+id/overall_distress_text"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/overall_distress_text"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
+        app:layout_constraintStart_toStartOf="@+id/gridLayout"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout" />
+
+    <TextView
+        android:id="@+id/overall_distress_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/distress_value"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
+        app:layout_constraintStart_toEndOf="@+id/overall_distress_text"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout" />
+
     <Spinner
         android:id="@+id/patient_select"
         android:layout_width="0dp"
@@ -28,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="72dp"
         android:text="@string/start_record_button"
         android:textAlignment="center"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -36,48 +59,47 @@
         app:layout_constraintTop_toBottomOf="@+id/gridLayout" />
 
     <GridLayout
+        android:id="@+id/gridLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:rowCount="2"
-        tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="8dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:id="@+id/gridLayout"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="100dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        app:layout_constraintRight_toRightOf="parent">
+        android:layout_marginTop="100dp"
+        android:columnCount="2"
+        android:rowCount="2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1">
+
+        <Button
+            android:id="@+id/os_button"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:backgroundTint="@color/severeDistress"
+            android:text="@string/oxygen_saturation_button" />
 
         <Button
             android:id="@+id/rr_button"
-            android:layout_width="170dp"
-            android:layout_height="200dp"
-            android:backgroundTint="@color/severeDistress"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:backgroundTint="@color/mildDistress"
             android:text="@string/respiratory_rate_button"
             android:textAlignment="center" />
 
         <Button
-            android:id="@+id/os_button"
-            android:layout_width="170dp"
-            android:layout_height="200dp"
-            android:backgroundTint="@color/mildDistress"
-            android:text="@string/oxygen_saturation_button" />
-
-        <Button
             android:id="@+id/hr_button"
-            android:layout_width="170dp"
-            android:layout_height="200dp"
-            android:backgroundTint="@color/mildDistress"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:backgroundTint="@color/noDistress"
             android:text="@string/heart_rate_button" />
 
         <Button
             android:id="@+id/temperature_button"
-            android:layout_width="170dp"
-            android:layout_height="200dp"
-            android:backgroundTint="@color/noDistress"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:backgroundTint="@color/mildDistress"
             android:text="@string/temperature_button" />
 
     </GridLayout>

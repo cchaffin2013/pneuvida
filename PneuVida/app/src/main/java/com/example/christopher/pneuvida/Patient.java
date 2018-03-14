@@ -2,6 +2,7 @@ package com.example.christopher.pneuvida;
 
 
 public class Patient {
+    //patient attributes
     private int _id;
     private String _name;
     private String _dob;
@@ -13,8 +14,8 @@ public class Patient {
     private String _notes;
 
     public Patient() {
-
     }
+
     public Patient(String name) {
         this._name = name;
     }
@@ -56,11 +57,11 @@ public class Patient {
         this._notes = _notes;
     }
 
+    //getters
     public int get_id() {
         return _id;
     }
 
-    //getters
     public String get_name() {
         return _name;
     }
@@ -91,5 +92,11 @@ public class Patient {
 
     public String get_notes() {
         return _notes;
+    }
+
+    //to string method for printing
+    @Override
+    public String toString() {
+        return this._name;
     }
 }
