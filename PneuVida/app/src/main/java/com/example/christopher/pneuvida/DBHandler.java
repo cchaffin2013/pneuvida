@@ -25,6 +25,10 @@ public class DBHandler extends SQLiteOpenHelper{
     private static final String COLUMN_MEDS = "_meds";
     private static final String COLUMN_ALLERGIES = "_allergies";
     private static final String COLUMN_NOTES = "_notes";
+    private static final String COLUMN_RR = "_rr";
+    private static final String COLUMN_OS = "_os";
+    private static final String COLUMN_HR = "_hr";
+    private static final String COLUMN_TEMP = "_temp";
 
     /* this dbhandler will be a singleton
     ** to ensure that only one instance of the db
@@ -53,7 +57,11 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_WEIGHT + " TEXT, " +
                 COLUMN_MEDS + " TEXT, " +
                 COLUMN_ALLERGIES + " TEXT, " +
-                COLUMN_NOTES + " TEXT " +
+                COLUMN_NOTES + " TEXT, " +
+                COLUMN_RR + " TEXT, " +
+                COLUMN_OS + " TEXT, " +
+                COLUMN_HR + " TEXT, " +
+                COLUMN_TEMP + " TEXT " +
                 ");";
         db.execSQL(query);
     }
@@ -77,6 +85,10 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(COLUMN_MEDS, patient.get_meds());
         values.put(COLUMN_ALLERGIES, patient.get_allergies());
         values.put(COLUMN_NOTES, patient.get_notes());
+        values.put(COLUMN_RR, "");
+        values.put(COLUMN_OS, "");
+        values.put(COLUMN_HR, "");
+        values.put(COLUMN_TEMP, "");
         db.insert(TABLE_PATIENTS, null, values);
 
         db.close();
@@ -222,6 +234,66 @@ public class DBHandler extends SQLiteOpenHelper{
         return notes;
     }
 
+    //respiratory rate to int
+    public String getRR(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_RR + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String rr;
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        rr = c.getString(c.getColumnIndex("_rr"));
+        db.close();
+        c.close();
+        return rr;
+    }
+
+    //oxygen saturation to int
+    public String getOS(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_OS + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String os;
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        os = c.getString(c.getColumnIndex("_os"));
+        db.close();
+        c.close();
+        return os;
+    }
+
+    //heart rate to int
+    public String getHR(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_HR + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String hr;
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        hr = c.getString(c.getColumnIndex("_hr"));
+        db.close();
+        c.close();
+        return hr;
+    }
+
+    //temperature to string
+    public String getTemp(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT "+ COLUMN_TEMP + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";";
+        String temp = "";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        temp = c.getString(c.getColumnIndex("_temp"));
+        db.close();
+        c.close();
+        return temp;
+    }
+
     //setters
     public void setName(String name, int id) {
         ContentValues values = new ContentValues();
@@ -295,6 +367,152 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void setRR(List<String> data, int id) {
+        ContentValues values = new ContentValues();
+        SQLiteDatabase db = getWritableDatabase();
+        StringBuilder sb = new StringBuilder();
+        String query = "SELECT " + COLUMN_RR + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";" ;
+        String vitalsData;
+        String value = "";
+
+        Cursor c = db.rawQuery(query,null);
+        c.moveToFirst();
+        sb.append(c.getString(c.getColumnIndex(COLUMN_RR)));
+        for(int i = 0; i < data.size(); i++) {
+            if(i == 0) {
+                sb.append("\n");
+            }
+            value = data.get(i);
+            sb.append(value);
+            if(i != data.size() - 1) {
+                if((i+1) % 2 == 0) {
+                    sb.append(",");
+                    sb.append("\n");
+                } else {
+                    sb.append(",");
+                }
+            } else {
+                sb.append("\n");
+            }
+
+        }
+
+        vitalsData = sb.toString();
+        values.put(COLUMN_RR, vitalsData);
+        db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
+        c.close();
+    }
+
+    public void setOS(List<String> data, int id) {
+        ContentValues values = new ContentValues();
+        SQLiteDatabase db = getWritableDatabase();
+        StringBuilder sb = new StringBuilder();
+        String query = "SELECT " + COLUMN_OS + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";" ;
+        String vitalsData;
+        String value;
+
+        Cursor c = db.rawQuery(query,null);
+        c.moveToFirst();
+        sb.append(c.getString(c.getColumnIndex(COLUMN_OS)));
+        for(int i = 0; i < data.size(); i++) {
+            if(i == 0) {
+                sb.append("\n");
+            }
+            value = data.get(i);
+            sb.append(value);
+            if(i != data.size() - 1) {
+                if((i+1) % 2 == 0) {
+                    sb.append(",");
+                    sb.append("\n");
+                } else {
+                    sb.append(",");
+                }
+            } else {
+                sb.append("\n");
+            }
+        }
+
+        vitalsData = sb.toString();
+        values.put(COLUMN_OS, vitalsData);
+        db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
+        c.close();
+    }
+
+    public void setHR(List<String> data, int id) {
+        ContentValues values = new ContentValues();
+        SQLiteDatabase db = getWritableDatabase();
+        StringBuilder sb = new StringBuilder();
+        String query = "SELECT " + COLUMN_HR + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";" ;
+        String vitalsData;
+        String value = "";
+
+        Cursor c = db.rawQuery(query,null);
+        c.moveToFirst();
+        sb.append(c.getString(c.getColumnIndex(COLUMN_HR)));
+        for(int i = 0; i < data.size(); i++) {
+            if(i == 0) {
+                sb.append("\n");
+            }
+            value = data.get(i);
+            sb.append(value);
+            if(i != data.size() - 1) {
+                if((i+1) % 2 == 0) {
+                    sb.append(",");
+                    sb.append("\n");
+                } else {
+                    sb.append(",");
+                }
+            } else {
+                sb.append("\n");
+            }
+        }
+
+        vitalsData = sb.toString();
+        values.put(COLUMN_HR, vitalsData);
+        db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
+        c.close();
+    }
+
+    public void setTemp(List<String> data, int id) {
+        ContentValues values = new ContentValues();
+        SQLiteDatabase db = getWritableDatabase();
+        StringBuilder sb = new StringBuilder();
+        String query = "SELECT " + COLUMN_TEMP + " FROM " + TABLE_PATIENTS + " WHERE " + COLUMN_ID + "=\"" + id + "\";" ;
+        String vitalsData;
+        String value = "";
+
+        Cursor c = db.rawQuery(query,null);
+        c.moveToFirst();
+        sb.append(c.getString(c.getColumnIndex(COLUMN_TEMP)));
+        for(int i = 0; i < data.size(); i++) {
+            if(i == 0) {
+                sb.append("\n");
+            }
+            value = data.get(i);
+            sb.append(value);
+            if(i != data.size() - 1) {
+                if((i+1) % 2 == 0) {
+                    sb.append(",");
+                    sb.append("\n");
+                } else {
+                    sb.append(",");
+                }
+            } else {
+                sb.append("\n");
+            }
+
+        }
+
+        vitalsData = sb.toString();
+        values.put(COLUMN_TEMP, vitalsData);
+        db.update(TABLE_PATIENTS, values, "_id=" + id, null);
+        db.close();
+        c.close();
+    }
+
     //database IDs to List
     public List toList() {
         List<Integer> patientIDs = new ArrayList<Integer>();
@@ -309,7 +527,7 @@ public class DBHandler extends SQLiteOpenHelper{
             c.moveToNext();
         }
         db.close();
-
+        c.close();
         return patientIDs;
     }
 

@@ -32,7 +32,8 @@
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".Settings" />
         <activity android:name=".VitalsGraph" />
-        <activity android:name=".Bluetooth"></activity>
+        <activity android:name=".Bluetooth" />
+        <activity android:name=".VitalsData" />
     </application>
 
 </manifest>

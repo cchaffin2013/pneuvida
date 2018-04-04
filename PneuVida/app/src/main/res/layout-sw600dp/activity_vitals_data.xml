@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.christopher.pneuvida.VitalsData">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/rr_data_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="85dp"
+                android:layout_marginTop="28dp"
+                android:isScrollContainer="true"
+                android:scrollIndicators="right"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:text="TextView"
+                app:layout_constraintEnd_toStartOf="@+id/os_data_text"
+                app:layout_constraintTop_toBottomOf="@+id/rr_text" />
+
+            <TextView
+                android:id="@+id/os_data_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="75dp"
+                android:layout_marginTop="28dp"
+                android:isScrollContainer="true"
+                android:scrollIndicators="right"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/rr_text"
+                app:layout_constraintTop_toBottomOf="@+id/os_text" />
+
+            <TextView
+                android:id="@+id/hr_data_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="75dp"
+                android:layout_marginTop="44dp"
+                android:isScrollContainer="true"
+                android:scrollIndicators="right"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:scrollbars="vertical"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/os_text"
+                app:layout_constraintTop_toBottomOf="@+id/heart_rate_text" />
+
+            <TextView
+                android:id="@+id/temp_data_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="75dp"
+                android:layout_marginTop="44dp"
+                android:isScrollContainer="true"
+                android:keepScreenOn="false"
+                android:scrollIndicators="right"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/heart_rate_text"
+                app:layout_constraintTop_toBottomOf="@+id/temperature_text" />
+
+            <TextView
+                android:id="@+id/rr_text"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="160dp"
+                android:layout_marginTop="104dp"
+                android:text="@string/respiratory_rate"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/heart_rate_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="75dp"
+                android:layout_marginTop="100dp"
+                android:text="@string/heart_rate"
+                app:layout_constraintStart_toEndOf="@+id/os_text"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/os_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="75dp"
+                android:layout_marginTop="100dp"
+                android:text="@string/oxygen_saturation"
+                app:layout_constraintStart_toEndOf="@+id/rr_text"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/temperature_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="75dp"
+                android:layout_marginTop="100dp"
+                android:text="@string/temperature"
+                app:layout_constraintStart_toEndOf="@+id/heart_rate_text"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

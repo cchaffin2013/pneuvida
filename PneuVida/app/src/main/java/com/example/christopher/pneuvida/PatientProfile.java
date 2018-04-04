@@ -61,5 +61,19 @@ public class PatientProfile extends AppCompatActivity {
                     }
                 }
         );
+
+        //button to see stored vital values
+        final ImageButton vitalsDataButton = (ImageButton) findViewById(R.id.vitals_data_button);
+
+        vitalsDataButton.setOnClickListener(
+            new ImageButton.OnClickListener() {
+                public void onClick(View v) {
+                    Intent vitalDataStart = new Intent(PatientProfile.this, VitalsData.class);
+                    vitalDataStart.putExtra("patientID", patientID);
+                    startActivity(vitalDataStart);
+                }
+            }
+        );
+
     }
 }

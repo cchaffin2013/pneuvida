@@ -69,15 +69,15 @@ public class EditProfile extends AppCompatActivity {
                             id = patientID;
                         }
                         //save data to the patient associated with id
-                        myDBHandler.setName(nameDisplay.getText().toString(), id);
-                        myDBHandler.setDob(dobDisplay.getText().toString(), id);
-                        myDBHandler.setSex(sexDisplay.getText().toString(), id);
-                        myDBHandler.setHeight(heightDisplay.getText().toString(), id);
-                        myDBHandler.setWeight(weightDisplay.getText().toString(), id);
-                        myDBHandler.setMeds(medsDisplay.getText().toString(), id);
-                        myDBHandler.setAllergies(allergiesDisplay.getText().toString(), id);
-                        myDBHandler.setNotes(notesDisplay.getText().toString(), id);
-                        myDBHandler.close();
+                            myDBHandler.setName(nameDisplay.getText().toString(), id);
+                            myDBHandler.setDob(dobDisplay.getText().toString(), id);
+                            myDBHandler.setSex(sexDisplay.getText().toString(), id);
+                            myDBHandler.setHeight(heightDisplay.getText().toString(), id);
+                            myDBHandler.setWeight(weightDisplay.getText().toString(), id);
+                            myDBHandler.setMeds(medsDisplay.getText().toString(), id);
+                            myDBHandler.setAllergies(allergiesDisplay.getText().toString(), id);
+                            myDBHandler.setNotes(notesDisplay.getText().toString(), id);
+                            myDBHandler.close();
                         Toast.makeText(EditProfile.this, "Changes Saved", Toast.LENGTH_SHORT).show();
                         finish();//close activity after saving
                     }
