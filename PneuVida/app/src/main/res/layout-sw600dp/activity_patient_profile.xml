@@ -5,59 +5,72 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.christopher.pneuvida.PatientProfile"
-    tools:layout_editor_absoluteY="81dp"
-    tools:layout_editor_absoluteX="0dp">
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="81dp">
 
     <ImageView
         android:id="@+id/profile_logo"
         android:layout_width="340dp"
         android:layout_height="60dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:contentDescription="@string/pneuvida_logo"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
+        app:srcCompat="@drawable/logo" />
 
     <ImageButton
         android:id="@+id/edit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="32dp"
+        android:clickable="true"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_edit"
-        tools:ignore="ContentDescription"
-        android:layout_marginTop="60dp" />
+        tools:ignore="ContentDescription" />
+
+    <ImageButton
+        android:id="@+id/vitals_data_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:clickable="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_heart" />
 
     <ScrollView
-        android:layout_width="350dp"
-        android:layout_height="439dp"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="112dp"
-        android:id="@+id/scrollView2">
+        android:id="@+id/scrollView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_logo">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/profile_picture"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginRight="124dp"
-                android:layout_marginTop="0dp"
-                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_account_box" />
 
@@ -134,9 +147,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/dob_text"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginTop="16dp"
                 app:layout_constraintTop_toBottomOf="@+id/name_display" />
 
             <TextView
@@ -145,8 +158,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="16dp"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/name_display" />
 
             <TextView
@@ -227,14 +240,5 @@
                 app:layout_constraintTop_toBottomOf="@+id/sex_display" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
-
-    <ImageButton
-        android:id="@+id/vitals_data_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_heart" />
 
 </android.support.constraint.ConstraintLayout>

@@ -1,5 +1,7 @@
 package com.example.christopher.pneuvida;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +20,7 @@ public class EditProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+
 
         //edit text fields
         final EditText nameDisplay = (EditText) findViewById(R.id.name_edit_text);
@@ -69,15 +72,15 @@ public class EditProfile extends AppCompatActivity {
                             id = patientID;
                         }
                         //save data to the patient associated with id
-                        myDBHandler.setName(nameDisplay.getText().toString(), id);
-                        myDBHandler.setDob(dobDisplay.getText().toString(), id);
-                        myDBHandler.setSex(sexDisplay.getText().toString(), id);
-                        myDBHandler.setHeight(heightDisplay.getText().toString(), id);
-                        myDBHandler.setWeight(weightDisplay.getText().toString(), id);
-                        myDBHandler.setMeds(medsDisplay.getText().toString(), id);
-                        myDBHandler.setAllergies(allergiesDisplay.getText().toString(), id);
-                        myDBHandler.setNotes(notesDisplay.getText().toString(), id);
-                        myDBHandler.close();
+                            myDBHandler.setName(nameDisplay.getText().toString(), id);
+                            myDBHandler.setDob(dobDisplay.getText().toString(), id);
+                            myDBHandler.setSex(sexDisplay.getText().toString(), id);
+                            myDBHandler.setHeight(heightDisplay.getText().toString(), id);
+                            myDBHandler.setWeight(weightDisplay.getText().toString(), id);
+                            myDBHandler.setMeds(medsDisplay.getText().toString(), id);
+                            myDBHandler.setAllergies(allergiesDisplay.getText().toString(), id);
+                            myDBHandler.setNotes(notesDisplay.getText().toString(), id);
+                            myDBHandler.close();
                         Toast.makeText(EditProfile.this, "Changes Saved", Toast.LENGTH_SHORT).show();
                         finish();//close activity after saving
                     }

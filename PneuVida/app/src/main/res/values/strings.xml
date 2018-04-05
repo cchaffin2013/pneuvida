@@ -43,7 +43,7 @@
     <string name="oxygen_saturation_button">"Oxygen Saturation""\n"0%"</string>
     <string name="heart_rate_button">"Heart Rate""\n""0 bpm"</string>
     <string name="temperature_button">"Temperature""\n""0.0 F"</string>
-    <string name="overall_distress_text">"Overall distress:"</string>
+    <string name="overall_distress_text">"Overall\ndistress:"</string>
     <string name="distress_value">"0.00"</string>
     <string name="start_record_button">"Start Recording"</string>
     <string name="stop_record_button">"Stop Recording"</string>
@@ -77,33 +77,13 @@
         x
         y
         z"</string>
-    <string name="about_text">" About the app
-        a
-        b
-        c
-        d
-        e
-        f
-        g
-        h
-        i
-        j
-        k
-        l
-        m
-        n
-        o
-        p
-        q
-        r
-        s
-        t
-        u
-        v
-        w
-        x
-        y
-        z"</string>
+    <string name="about_text"> "About the app\n\n"
+        "    PneuVida is a wearable glove device that measures respiratory rate, SpO2 levels, heart rate, and temperature."
+        " The goal of the device is to accurately and reliably measure the aforementioned vitals, and allow for their quantification in order to yield the overall level of respiratory distress an individual is experiencing."
+        " PneuVida has the ability to assist in the monitoring of respiratory distress and pneumonia in both a clinical and non-clinical setting due to a user-friendly interface."
+        " The PneuVida team sees great prospect for the device, with applications in not only respiratory distress, but other ailments and general vital monitoring itself using an altered algorithm and vital importance weighting system."
+
+        </string>
     <string name="legal_text">" Legal information
         a
         b
@@ -149,5 +129,11 @@
     <string name="save_confirm">Save recorded data?</string>
     <string name="no_button_text">No</string>
     <string name="yes_button_text">Yes</string>
+
+    <!--vitals data strings -->
+    <string name="respiratory_rate">"Respiratory\nRate"</string>
+    <string name="oxygen_saturation">Oxygen\nSaturation</string>
+    <string name="temperature">Temperature</string>
+    <string name="heart_rate">Heart Rate</string>
 
 </resources>

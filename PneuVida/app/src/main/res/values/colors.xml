@@ -10,4 +10,5 @@
     <color name="noDistress">#23df0e</color>
     <color name="mildDistress">#f7f713</color>
     <color name="severeDistress">#ed0d0d</color>
+    <color name="invalid">#c0c0c0</color>
 </resources>
