@@ -42,15 +42,13 @@ public class Vitals extends AppCompatActivity {
 
     // SPP UUID service
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-
     // MAC-address of Bluetooth module
     private static String address = "98:D3:31:90:4E:2E";//"00:14:03:06:41:DD";
-
     //Bluetooth handler
     Handler h;
 
     //signal arrays
-    int sampleSize = 5000;
+    int sampleSize = 2000;
     double[] redSignal = new double[sampleSize];
     double[] irSignal = new double[sampleSize];
     int count = 0;
@@ -109,33 +107,31 @@ public class Vitals extends AppCompatActivity {
         final List<String> hrData = new LinkedList<>();
         final List<String> tempData = new LinkedList<>();
 
-
-        //find better way to do this
-        //final int[] vitalsArray = new int[4];
-
         //Bluetooth handler
         h = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 switch (msg.what) {
                     case RECEIVE_MESSAGE:                                                   // if receive massage
                         byte[] readBuf = (byte[]) msg.obj;
-                        String strIncom = new String(readBuf, 0, msg.arg1);                 // create string from bytes array
+                        String strIncom = new String(readBuf, 0, msg.arg1);           // create string from bytes array
                         sb.append(strIncom);                                                // append string
-                        int endOfLineIndex = sb.indexOf("\r\n");                            // determine the end-of-line
-                        //int vitalValue;
-                        if (endOfLineIndex > 0) {                                            // if end-of-line,
+                        int endOfLineIndex = sb.indexOf("\r\n");                            // determine the end of line
+                        if (endOfLineIndex > 0) {                                           // if end of line
                             String sbprint = sb.substring(0, endOfLineIndex);               // extract string
-                            sb.delete(0, sb.length());// and clear
-                            //Toast.makeText(getApplicationContext(), sbprint, Toast.LENGTH_SHORT).show();
-                            if(count < sampleSize) {
+                            sb.delete(0, sb.length());                                      // clear string builder
+                            if (count < sampleSize) {
                                 redSignal[count] = Double.parseDouble(sbprint);
                                 count++;
-                            } else if(count < sampleSize*2) {
-                                irSignal[count-sampleSize] = Double.parseDouble(sbprint);
+                                mConnectedThread.write("2");                                 // tell arduino message was received and processed
+                            } else if (count < sampleSize * 2) {
+                                irSignal[count - sampleSize] = Double.parseDouble(sbprint);
                                 count++;
+                                mConnectedThread.write("2");                                 // tell arduino message was received and processed
                             } else {
-                                count = 0; //reset counter
-                                temp = Double.parseDouble(sbprint); //read in temperature
+                                //reset counter
+                                count = 0;
+                                //get temperature value
+                                temp = Double.parseDouble(sbprint);
                                 //calculate remaining vitals
                                 totalHR = calculateHR(redSignal) + calculateHR(irSignal);
                                 rr = calculateRR(totalHR);
@@ -150,7 +146,7 @@ public class Vitals extends AppCompatActivity {
                                 hrColor(hRating, hrButton);
                                 rrButton.setText("Respiratory Rate\n" + rr + " BPM");
                                 rrColor(rRating, rrButton);
-                                osButton.setText("Oxygen Saturation\n" + spo2 +"%");
+                                osButton.setText(String.format("Oxygen Saturation\n %.2f", spo2));
                                 osColor(oRating, osButton);
                                 temperatureButton.setText("Temperature\n" + temp + " F");
                                 tempColor(tRating, temperatureButton);
@@ -160,7 +156,11 @@ public class Vitals extends AppCompatActivity {
                                 rrData.add(Integer.toString(rr));
                                 osData.add(Double.toString(spo2));
                                 tempData.add(Double.toString(temp));
+
+                                mConnectedThread.write("1");
                             }
+                        }
+                    break;
                             /*switch (sbprint.substring(0,1)) {
                                 case "o":
                                     vitalValue = Integer.parseInt(sbprint.substring(1));
@@ -195,8 +195,6 @@ public class Vitals extends AppCompatActivity {
                                     overallDistress(osRating(vitalsArray[0]), rrRating(vitalsArray[1]), hrRating(vitalsArray[2]), temperatureRating(vitalsArray[3]), overallDistressText, distressValueText);
                                     break;
                             }*/
-                        }
-                        break;
                 }
             }
         };
@@ -204,6 +202,7 @@ public class Vitals extends AppCompatActivity {
         // get Bluetooth adapter
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         checkBTState();
+
 
         //sets up drop down menu called a spinner to get patients from database
         final Spinner patientSelect = (Spinner) findViewById(R.id.patient_select);
@@ -317,13 +316,7 @@ public class Vitals extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        // Set up a pointer to the remote node using it's address.
         BluetoothDevice device = btAdapter.getRemoteDevice(address);
-
-        // Two things are needed to make a connection:
-        //   A MAC address, which we got above.
-        //   A Service ID or UUID.  In this case we are using the
-        //     UUID for SPP.
 
         try {
             btSocket = createBluetoothSocket(device);
@@ -331,11 +324,9 @@ public class Vitals extends AppCompatActivity {
             errorExit("Fatal Error", "In onResume() and socket create failed: " + e.getMessage() + ".");
         }
 
-        // Discovery is resource intensive.  Make sure it isn't going on
-        // when you attempt to connect and pass your message.
         btAdapter.cancelDiscovery();
 
-        // Establish the connection.  This will block until it connects.
+        // Establish connection
         try {
             btSocket.connect();
             Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_SHORT).show();
@@ -347,7 +338,7 @@ public class Vitals extends AppCompatActivity {
             }
         }
 
-        // Create a data stream so we can talk to server.
+        // Create stream
         mConnectedThread = new ConnectedThread(btSocket);
         mConnectedThread.start();
     }
@@ -378,15 +369,13 @@ public class Vitals extends AppCompatActivity {
     }
 
     private void checkBTState() {
-        // Check for Bluetooth support and then check to make sure it is turned on
-        // Emulator doesn't support Bluetooth and will return null
+        // Check for Bluetooth support, then tell user to turn it on if it is not already
         if(btAdapter==null) {
             errorExit("Fatal Error", "Bluetooth not support");
         } else {
             if (btAdapter.isEnabled()) {
 
             } else {
-                //Prompt user to turn on Bluetooth
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, 1);
             }
@@ -455,11 +444,11 @@ public class Vitals extends AppCompatActivity {
     private static double calculateOS(double[] signalArray1, double[] signalArray2) {
         int st = 60;
         double[] img = new double[signalArray1.length];
-        FFT f = new FFT(2048);
+        FFT f = new FFT(1024);
         f.fft(signalArray1, img);
         img = new double[signalArray2.length];
         f.fft(signalArray2, img);
-        double[] subArray = new double[2048];
+        double[] subArray = new double[1024];
         int localMaxI;
         double localMax;
         int pkRedI;
@@ -500,7 +489,13 @@ public class Vitals extends AppCompatActivity {
         rRed = Math.abs(signalArray1[pkRedI]/signalArray1[1]);
         rIR = Math.abs(signalArray2[pkIrI]/signalArray2[1]);
         r = rRed/rIR;
-        return (110 - (25*r));
+        double spo2 = (110 - (25*r));
+
+        if(spo2 > 100) {
+            spo2 = 99;
+        }
+
+        return spo2;
     }
 
     private static int calculateHR(double[] sa) {
@@ -588,7 +583,7 @@ public class Vitals extends AppCompatActivity {
     private int rrRating(int rr) {
         if(rr < 8) {
             return 0;
-        } else if(rr < 12 || rr >= 25) {                  //severe distress
+        } else if(rr < 12 || rr >= 25) {           //severe distress
             return 2;
         } else if(rr > 18) {                       //mild distress
             return 6;
@@ -601,9 +596,9 @@ public class Vitals extends AppCompatActivity {
     private int osRating(double os) {
         if(os < 88) {
             return 0;
-        } else if(os <= 91.0) {                            //severe distress
+        } else if(os <= 91.0) {                   //severe distress
             return 2;
-        } else if(os > 91.0 && os <= 95.0) {          //mild distress
+        } else if(os > 91.0 && os <= 95.0) {      //mild distress
             return 6;
         } else {                                  //no distress
             return 10;
@@ -614,7 +609,7 @@ public class Vitals extends AppCompatActivity {
     private int hrRating(int hr) {
         if(hr < 50) {
             return 0;
-        } else if(hr >= 100) {                            //severe distress
+        } else if(hr >= 100) {                     //severe distress
             return 2;
         } else if(hr > 76 && hr < 100) {           //mild distress
             return 6;
@@ -625,11 +620,11 @@ public class Vitals extends AppCompatActivity {
 
     //rating for temperature
     private int temperatureRating(double temp) {
-        if (temp < 95) {
+        if (temp < 94) {
             return 0;
-        }else if(temp >= 102.0) {                        //severe distress
+        }else if(temp >= 102.0) {                  //severe distress
             return 2;
-        } else if(temp >= 98.6 && temp <= 101.9) { //mild distress
+        } else if(temp >= 98.8 && temp <= 101.9) { //mild distress
             return 6;
         } else {                                   //no distress
             return 10;
@@ -653,7 +648,7 @@ public class Vitals extends AppCompatActivity {
                 break;
 
             default:
-                rrButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.invalid), PorterDuff.Mode.MULTIPLY);;//green
+                rrButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.invalid), PorterDuff.Mode.MULTIPLY);;//grey
                 break;
         }
     }
@@ -675,7 +670,7 @@ public class Vitals extends AppCompatActivity {
                 break;
 
             default:
-                osButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.invalid), PorterDuff.Mode.MULTIPLY);//green
+                osButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.invalid), PorterDuff.Mode.MULTIPLY);//grey
                 break;
         }
     }
@@ -697,7 +692,7 @@ public class Vitals extends AppCompatActivity {
                 break;
 
             default:
-                hrButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.invalid), PorterDuff.Mode.MULTIPLY);//green
+                hrButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.invalid), PorterDuff.Mode.MULTIPLY);//grey
                 break;
         }
     }
@@ -719,7 +714,7 @@ public class Vitals extends AppCompatActivity {
                 break;
 
             default:
-                temperatureButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.invalid), PorterDuff.Mode.MULTIPLY);//green
+                temperatureButton.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.invalid), PorterDuff.Mode.MULTIPLY);//grey
                 break;
         }
     }
